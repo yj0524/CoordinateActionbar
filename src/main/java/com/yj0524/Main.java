@@ -12,6 +12,7 @@ import java.io.File;
 public final class Main extends JavaPlugin implements Listener {
 
     String coordinateMessage;
+    boolean coordinateMessageShow;
 
     @Override
     public void onEnable() {
@@ -33,9 +34,11 @@ public final class Main extends JavaPlugin implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    String coords = coordinateMessage.replace("&", "§").replace("%z%", String.valueOf(player.getLocation().getBlockZ())).replace("%y%", String.valueOf(player.getLocation().getBlockY())).replace("%x%", String.valueOf(player.getLocation().getBlockX()));
-                    player.sendActionBar(coords);
+                if (coordinateMessageShow) {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        String coords = coordinateMessage.replace("&", "§").replace("%z%", String.valueOf(player.getLocation().getBlockZ())).replace("%y%", String.valueOf(player.getLocation().getBlockY())).replace("%x%", String.valueOf(player.getLocation().getBlockX()));
+                        player.sendActionBar(coords);
+                    }
                 }
             }
         }.runTaskTimer(this, 0, 1); // Repeat every 1 ticks (0.05s)
@@ -51,8 +54,10 @@ public final class Main extends JavaPlugin implements Listener {
         // Load chest size from config
         FileConfiguration config = getConfig();
         coordinateMessage = config.getString("coordinateMessage", "&eX&r : %x% | &aY&r : %y% | &bZ&r : %z%");
+        coordinateMessageShow = config.getBoolean("coordinateMessageShow", true);
         // Save config
         config.set("coordinateMessage", coordinateMessage);
+        config.set("coordinateMessageShow", coordinateMessageShow);
         saveConfig();
     }
 }
